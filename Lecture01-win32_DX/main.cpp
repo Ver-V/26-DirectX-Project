@@ -16,7 +16,7 @@
 
 // 전역 변수 (간결한 예제를 위해 사용)
 ID3D11Device * g_pd3dDevice = nullptr;                  //모든 리소스의 생성을 담당하는 핵심 객체임. 하드웨어(GPU)와의 통로 역할을 하며, 실질적으로 메모리를 할당하는 기능을 가짐.
-ID3D11DeviceContext* g_pImmediateContext = nullptr;     //생성된 리소스를 사용하여 GPU에 그리기 명령(Rendering Commands)을 내리는 객체임. 파이프라인의 상태를 설정하고 실제로 "그려라(Draw)"라고 지시함.
+ID3D11DeviceContext* g_pImmediateContext = nullptr;     //생성된 리소스를 사용하여 GPU에 그리기 명령(Rendering Commands)을 내리는 객체임. 파이프라인의 상태를 설정하고 실제로 "그려라(Draw)"라고 지시함. gpu가 명령을 내리는 순간 즉시 반응해서 immediate context
 IDXGISwapChain* g_pSwapChain = nullptr;                 //그려진 그림을 모니터 화면으로 전달하고 관리하는 시스템임. 더블 버퍼링(Double Buffering) 기술의 실체라고 보면 됨.
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;  //GPU가 결과물을 써 내려갈 대상(Target)을 정의하는 '뷰(View)' 객체임. DX11에서는 리소스(Texture2D)를 직접 파이프라인에 꽂지 않음. 대신 그 리소스를 어떤 용도(렌더 타겟용, 셰이더 읽기용 등)로 쓸 것인지 정의하는 'View'를 통해 접근함.
 
@@ -79,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     sd.BufferDesc.Height = 600;
     sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = hWnd; // 생성한 Win32 창 핸들 연결
+    sd.OutputWindow = hWnd; // 생성한 Win32 창 핸들 연결 / handle window 윈도우를 조작하는 핸들을 가리키는 포인터
     sd.SampleDesc.Count = 1;
     sd.Windowed = TRUE;
 
@@ -112,7 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // Vertex Buffer
     Vertex vertices[] = {
-        {  0.0f,  0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
+        {  0.0f,  0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },// position > color order / x,y,z > r,g,b,a
         {  0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
         { -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f },
     };
@@ -147,8 +147,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             g_pImmediateContext->VSSetShader(vShader, nullptr, 0);
             g_pImmediateContext->PSSetShader(pShader, nullptr, 0);
 
-            g_pImmediateContext->Draw(3, 0);
-            g_pSwapChain->Present(0, 0);
+            g_pImmediateContext->Draw(3, 0); // back buffer에 그리기
+            g_pSwapChain->Present(0, 0); // back buffer를 현재 front buffer랑 스왑시켜라 (Hz개념이랑도 연동)
         }
     }
 

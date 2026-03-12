@@ -15,7 +15,7 @@
 #include <windows.h>
 
 // 1. 윈도우 메시지 처리 함수 (Window Procedure)
-// 사용자 입력(키보드, 마우스)이나 시스템 이벤트를 처리하는 핵심 콜백 함수임.
+// 사용자 입력(키보드, 마우스)이나 시스템 이벤트를 처리하는 핵심 콜백 함수임. 윈도우 procedure를 등록할 때만 사용하는 함수. 다른 곳은 안됨!
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -31,7 +31,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// 2. WinMain: 프로그램의 진입점 (Entry Point)
+// 2. WinMain: 프로그램의 진입점 (Entry Point) 실제 main 함수는 window.h 파일에 숨어있고, 얘는 겉으로 보이는 시작점임.
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     // --- (A) 윈도우 클래스 등록 ---
@@ -68,7 +68,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     // OS로부터 전달되는 메시지를 지속적으로 감시하고 처리함.
     // DirectX 연동 시에는 GetMessage 대신 PeekMessage를 사용하여 무한 루프를 돌림.
     MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (GetMessage(&msg, nullptr, 0, 0)) // Message queue는 명시적으로 없지만, 이미 만들어진 내부의 가려진 message queue에서 가져옴.
     {
         TranslateMessage(&msg); // 키보드 입력 메시지 변환
         DispatchMessage(&msg);  // WndProc으로 메시지 전달
