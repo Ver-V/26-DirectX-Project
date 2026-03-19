@@ -76,7 +76,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 /*
  * [WinMain - 프로그램의 심장부]
  */
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) //LPSTR은 여러 명령어들을 인식함. -h 같은것들
 {
     // (A) 윈도우 클래스 등록: 창의 '설계도'를 OS에 등록함.
     WNDCLASSEXW wcex = { sizeof(WNDCLASSEX) };
@@ -89,7 +89,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     RegisterClassExW(&wcex);
 
-    // (B) 윈도우 생성: 설계도를 바탕으로 실제 '객체(창)'를 메모리에 만듦.
+    // (B) 윈도우 생성: 설계도를 바탕으로 실제 '객체(창)'를 메모리에 만듦. 윈도우를 컨트롤 할 수 있는 친구임
     HWND hWnd = CreateWindowW(L"MyLectureClass", L"Input Study Window", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, hInstance, NULL);
 
