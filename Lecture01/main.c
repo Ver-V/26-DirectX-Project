@@ -36,12 +36,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
     // --- (A) 윈도우 클래스 등록 ---
     // 생성할 창의 속성(아이콘, 커서, 배경색, 메시지 처리 함수 등)을 정의함.
-    WNDCLASSEXW wcex = {};
+    WNDCLASSEXW wcex = { };
     wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.style = CS_HREDRAW | CS_VREDRAW;           // 가로/세로 크기 변경 시 다시 그리기
     wcex.lpfnWndProc = WndProc;                     // 메시지 처리 함수 연결
     wcex.hInstance = hInstance;                     // 현재 프로그램 인스턴스 핸들
-    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);  // 기본 화살표 커서 사용
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);  // 기본 화살표 커서 사용
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);  // 창 배경색 설정
     wcex.lpszClassName = L"DirectXWindowClass";      // 클래스 고유 이름
 
@@ -55,7 +55,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         WS_OVERLAPPEDWINDOW,        // 일반적인 윈도우 스타일 (최소화, 최대화 등 포함)
         CW_USEDEFAULT, CW_USEDEFAULT, // 초기 위치 (X, Y)
         800, 600,                   // 창 너비와 높이
-        nullptr, nullptr, hInstance, nullptr
+        NULL, NULL, hInstance, NULL
     );
 
     if (!hWnd) return FALSE;
@@ -68,7 +68,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     // OS로부터 전달되는 메시지를 지속적으로 감시하고 처리함.
     // DirectX 연동 시에는 GetMessage 대신 PeekMessage를 사용하여 무한 루프를 돌림.
     MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0)) // Message queue는 명시적으로 없지만, 이미 만들어진 내부의 가려진 message queue에서 가져옴.
+    while (GetMessage(&msg, NULL, 0, 0)) // Message queue는 명시적으로 없지만, 이미 만들어진 내부의 가려진 message queue에서 가져옴.
     {
         TranslateMessage(&msg); // 키보드 입력 메시지 변환
         DispatchMessage(&msg);  // WndProc으로 메시지 전달
