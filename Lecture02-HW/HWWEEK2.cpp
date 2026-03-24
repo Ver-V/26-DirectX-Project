@@ -75,23 +75,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+// Input만 받아서 처리하고
 void ProcessInput(GameContext* ctx) {
-    if (ctx->currentInput == 'J' || ctx->currentInput == 'j') {
-        ctx->posX--;
-    }
-    else if (ctx->currentInput == 'L' || ctx->currentInput == 'l') {
-        ctx->posX++;
-    }
-    else if (ctx->currentInput == 'K' || ctx->currentInput == 'k') {
-        ctx->posY--;
-    }
-    else if (ctx->currentInput == 'I' || ctx->currentInput == 'i') {
-        ctx->posY++;
+    if (ctx->currentInput != 'J' &&
+        ctx->currentInput != 'L' &&
+        ctx->currentInput != 'I' &&
+        ctx->currentInput != 'K') {
+        ctx->currentInput = ' ';
     }
 }
 
+// 받은 Input에 따라서 도형의 위치를 바꿔주고.
 void Update(GameContext* ctx) {
-    float position = 0.001f;
+    if (ctx->currentInput == 'J') ctx->posX--;
+    else if (ctx->currentInput == 'L') ctx->posX++;
+    else if (ctx->currentInput == 'I') ctx->posY++;
+    else if (ctx->currentInput == 'K') ctx->posY--;
+}
+
+// 바뀐 도형의 위치를 전달받아서 실시간으로 다시 그려줘서 render한다.
+void Render(GameContext* ctx, ID3D11Buffer*& pVBuffer, ID3D11InputLayout* pInputLayout, ID3D11VertexShader* vShader, ID3D11PixelShader* pShader) {
+
+    float position = 0.0001f;
     float ox = ctx->posX * position;
     float oy = ctx->posY * position;
 
@@ -103,16 +108,22 @@ void Update(GameContext* ctx) {
         {  0.5f + ox,  0.167f + oy, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f },
         {  0.0f + ox, -0.834f + oy, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f },
     };
-}
 
+    if (pVBuffer) {
+        pVBuffer->Release();
+        pVBuffer = nullptr;
+    }
 
-void Render(GameContext* ctx, ID3D11Buffer* pVBuffer, ID3D11InputLayout* pInputLayout, ID3D11VertexShader* vShader, ID3D11PixelShader* pShader) {
-    g_pImmediateContext->UpdateSubresource(pVBuffer, 0, nullptr, currentVertices, 0, 0);
+    D3D11_BUFFER_DESC bd = { sizeof(currentVertices), D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0, 0, 0 };
+    D3D11_SUBRESOURCE_DATA initData = { currentVertices, 0, 0 };
+
+    g_pd3dDevice->CreateBuffer(&bd, &initData, &pVBuffer);
 
     float clearColor[] = { 0.1f, 0.2f, 0.3f, 1.0f };
     g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, clearColor);
 
     g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, nullptr);
+
     D3D11_VIEWPORT vp = { 0, 0, 800, 800, 0.0f, 1.0f };
     g_pImmediateContext->RSSetViewports(1, &vp);
 
