@@ -7,7 +7,7 @@
  3. GameWorld (세계): 모든 물체를 담고 있는 '바구니'
 
  * 구조: Component -> GameObject -> GameWorld 순으로 확장됨.
-         (루프 한 번 돌 때 [입력 -> 업데이트 -> 렌더링] 순서로 모든 객체를 훑음.) 본인만의 coding convention이 있으면 좋음.
+         (루프 한 번 돌 때 [입력 -> 업데이트 -> 렌더링] 순서로 모든 객체를 훑음.)
  [작동 원리]
  - Start(): 물체가 태어날 때 딱 한 번 실행되는 초기화 코드
  - Input(): 키보드/마우스 상태를 확인.
@@ -25,7 +25,7 @@
 #include <string>
 
 // 콘솔의 특정 좌표로 커서를 이동시키는 함수
-void MoveCursor(int x, int y) 
+void MoveCursor(int x, int y)
 {
     // \033[y;xH  (y와 x는 1부터 시작함)
     printf("\033[%d;%dH", y, x);
@@ -33,7 +33,7 @@ void MoveCursor(int x, int y)
 
 // [1단계: 컴포넌트 기저 클래스]
 // 모든 기능(이동, 렌더링 등)은 이 클래스를 상속받아야 함.
-class Component 
+class Component
 {
 public:
     class GameObject* pOwner = nullptr; // 이 기능이 누구의 것인지 저장
@@ -54,21 +54,21 @@ public:
     std::string name;
     std::vector<Component*> components;
 
-    GameObject(std::string n) 
+    GameObject(std::string n)
     {
         name = n;
     }
 
     // 객체가 죽을 때 담고 있던 컴포넌트들도 메모리에서 해제함
     ~GameObject() {
-        for (int i = 0; i < (int)components.size(); i++) 
+        for (int i = 0; i < (int)components.size(); i++)
         {
             delete components[i];
         }
     }
 
     // 새로운 기능을 추가하는 함수
-    void AddComponent(Component* pComp) 
+    void AddComponent(Component* pComp)
     {
         pComp->pOwner = this;
         pComp->isStarted = false;
@@ -83,8 +83,13 @@ class PlayerControl : public Component {
 public:
     float x, y, speed;
     bool moveUp, moveDown, moveLeft, moveRight;
+    int playerType = 0;
 
-    void Start() override 
+    PlayerControl(int type)
+    {
+        playerType = type;
+    }
+    void Start() override
     {
         x = 50.0f; y = 50.0f; speed = 150.0f;
         moveUp = moveDown = moveLeft = moveRight = false;
@@ -92,16 +97,26 @@ public:
     }
 
     // [입력 단계] 키 상태만 체크함
-    void Input() override 
+    void Input() override
     {
-        moveUp = (GetAsyncKeyState('W') & 0x8000);
-        moveDown = (GetAsyncKeyState('S') & 0x8000);
-        moveLeft = (GetAsyncKeyState('A') & 0x8000);
-        moveRight = (GetAsyncKeyState('D') & 0x8000);
+        if (playerType == 0)
+        {
+            moveUp = (GetAsyncKeyState('W') & 0x8000);
+            moveDown = (GetAsyncKeyState('S') & 0x8000);
+            moveLeft = (GetAsyncKeyState('A') & 0x8000);
+            moveRight = (GetAsyncKeyState('D') & 0x8000);
+        }
+        if (playerType == 1)
+        {
+            moveUp = (GetAsyncKeyState(VK_UP) & 0x8000);
+            moveDown = (GetAsyncKeyState(VK_DOWN) & 0x8000);
+            moveLeft = (GetAsyncKeyState(VK_LEFT) & 0x8000);
+            moveRight = (GetAsyncKeyState(VK_RIGHT) & 0x8000);
+        }
     }
 
     // [업데이트 단계] 체크된 키 상태로 좌표만 계산함
-    void Update(float dt) override 
+    void Update(float dt) override
     {
         if (moveUp)    y -= speed * dt;
         if (moveDown)  y += speed * dt;
@@ -110,11 +125,11 @@ public:
     }
 
     // [렌더링 단계] 계산된 좌표를 화면에 그림
-    void Render() override 
+    void Render() override
     {
         // 실제 엔진이라면 여기서 DirectX Draw를 부름
         // 지금은 좌표 시각화로 대체
-        
+
         if (x < 10.0f)
             x = 10.0f;
         if (y < 45.0f)
@@ -123,25 +138,30 @@ public:
         int py = (int)(y / 15.0f);
         int px = (int)(x / 10.0f);
 
-        
+
         MoveCursor(px, py);
-        printf("★");
+
+        if (playerType == 0)
+            printf("★");
+        if (playerType == 1)
+            printf("☆");
+
     }
 };
 
 // 기능 2: 시스템 정보 출력 (위치 정보 없음)
-class InfoDisplay : public Component 
+class InfoDisplay : public Component
 {
 public:
     float totalTime = 0.0f;
 
-    void Start() override 
+    void Start() override
     {
         totalTime = 0.0f;
         printf("[%s] InfoDisplay 기능 시작!\n", pOwner->name.c_str());
     }
 
-    void Update(float dt) override 
+    void Update(float dt) override
     {
         totalTime += dt;
     }
@@ -176,8 +196,8 @@ public:
         prevTime = std::chrono::high_resolution_clock::now();
         deltaTime = 0.0f;
 
-        
-    }    
+
+    }
 
     void Input()
     {
@@ -233,7 +253,7 @@ public:
         }
     }
 
-    
+
 
     void Run()
     {
@@ -271,7 +291,7 @@ public:
 };
 
 // --- [4단계: 메인 엔진 루프] ---
-int main() 
+int main()
 {
     //게임루프
     GameLoop gLoop;
@@ -279,20 +299,21 @@ int main()
 
     // 시스템 정보 객체 조립
     GameObject* sysInfo = new GameObject("SystemManager");
-    InfoDisplay* pInfo = new InfoDisplay();
-    sysInfo->AddComponent(pInfo);
+    sysInfo->AddComponent(new InfoDisplay());
     gLoop.gameWorld.push_back(sysInfo);
 
     // 플레이어 객체 조립
-    GameObject* player = new GameObject("Player1");
-    PlayerControl* pControl = new PlayerControl();
-    player->AddComponent(pControl);
-    gLoop.gameWorld.push_back(player);
+    GameObject* player1 = new GameObject("Player1");
+    player1->AddComponent(new PlayerControl(0));
+    gLoop.gameWorld.push_back(player1);
+
+    // 플레이어 객체 조립
+    GameObject* player2 = new GameObject("Player2");
+    player2->AddComponent(new PlayerControl(1));
+    gLoop.gameWorld.push_back(player2);
 
     //게임루프 실행
     gLoop.Run();
-
-    //메모리 해제
 
     return 0;
 }
