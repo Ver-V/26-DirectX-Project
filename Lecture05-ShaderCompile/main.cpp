@@ -1,5 +1,5 @@
 /*
- * [강의 포인트: 셰이더 컴파일의 4가지 길]
+ * [포인트: 셰이더 컴파일의 4가지 길]
  * 1. CompileFromString: 코드 내부에 텍스트로 존재 (빠른 테스트용)
  * 2. CompileFromFile: 외부 파일(.hlsl)에서 읽기 (실무 표준)
  * 3. Separate Files: VS와 PS를 완전히 다른 파일로 관리 (대규모 프로젝트)
@@ -12,11 +12,6 @@
   * 주의: 프로젝트 폴더에 "Shader.hlsl" 파일이 있어야 파일 방식이 작동함.
   */
 
-  /*
-   * [하위 시스템과 진입점]
-   * - /subsystem:console -> 창을 띄우되, 배후에 콘솔(검은 창)을 함께 띄움 (printf 디버깅용).
-   * - /entry:WinMainCRTStartup -> 윈도우 프로그램의 시작점인 WinMain을 호출하라고 링커에게 명령함.
-   */
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 #include <windows.h>
