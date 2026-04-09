@@ -171,7 +171,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             g_pSwapChain->Present(0, 0);
         }
     }
-
+    
     // --- [6. 자원 해제 (Release)] ---
     // 생성(Create)한 모든 객체는 프로그램 종료 전 반드시 Release 해야 함.
     // 생성의 역순으로 해제하는 것이 관례임.

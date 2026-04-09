@@ -220,11 +220,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
          b. 연결 고리 (The Link):
             - [C++ 코드]
               { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, ... }
-                 ▲ 이 문자열이 바로 '키(Key)'임.
+                    ▲ 이 문자열이 바로 '키(Key)'임.
 
             - [HLSL 코드]
               float3 pos : POSITION;
-                           ▲ 이 꼬리표가 '키(Key)'임.
+                              ▲ 이 꼬리표가 '키(Key)'임.
 
             - 두 키가 일치해야만 비로소 메모리상의 데이터가 `pos` 변수로 흘러 들어감.
 
@@ -242,8 +242,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ================================================================================
     */
     const char* shaderSource = R"(
-        
-
         // [1. 입력 데이터 구조체]
         // CPU(C++ 코드)에서 보낸 정점 데이터가 처음으로 도착하는 입구임.
         // C++의 Vertex 구조체와 데이터 순서, 형식이 반드시 일치해야 함.
@@ -295,6 +293,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             return input.col;
         }
     )";
+
     ID3DBlob* vsBlob, * psBlob;
     D3DCompile(shaderSource, strlen(shaderSource), nullptr, nullptr, nullptr, "VS_Main", "vs_4_0", 0, 0, &vsBlob, nullptr);
     D3DCompile(shaderSource, strlen(shaderSource), nullptr, nullptr, nullptr, "PS_Main", "ps_4_0", 0, 0, &psBlob, nullptr);

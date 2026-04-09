@@ -156,3 +156,5 @@ int main() {
     printf("게임이 안전하게 종료되었습니다.\n");
     return 0;
 }
+
+
